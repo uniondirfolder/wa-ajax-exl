@@ -1,0 +1,68 @@
+﻿@model string
+
+@{
+    ViewBag.Title = "Index";
+
+    var options = new AjaxOptions
+    {
+        //Confirm="Are you want send and wait 1 second"
+        LoadingElementId="loading",
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId="target",
+        //Url=Url.Action("FindCourse", new {name=Model}),
+        Url = Url.Action("FindCourseJson", new { name = Model }),
+        OnSuccess = "OnSuccess" //callback function, work after when we get data
+    };
+
+    var queryOptions = new AjaxOptions { UpdateTargetId = "target", LoadingElementId = "loading" };
+}
+
+<div id="loading" style="display:none">
+    <img src="https://obradio.com.ua/wp-content/uploads/AAPL/loaders/loading.gif"
+         alt="star"/>
+</div>
+
+<div class="row">
+    <div class="col-md-10">
+        <h1>Courses</h1>
+        @using (Ajax.BeginForm(options))
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="target">
+                    @Html.Action("FindCourse", new { name = Model })
+                </tbody>
+            </table>
+            @Html.DropDownList("name", new SelectList(new[] {"All", "C", "Java"}, (Model ?? "All")))
+            <input type="submit"/>
+        }
+
+        @Ajax.ActionLink("C Language", "FindCourse", 
+            new { name = "C" },
+            queryOptions,
+            htmlAttributes: new { @class="btn btn-default" })
+        <br />
+        @Ajax.ActionLink("Java Language", "FindCourse",
+            new { name = "Java" },
+            queryOptions,
+            htmlAttributes: new { @class = "btn btn-default"  })
+    </div>
+</div>
+<script src="~/Scripts/jquery-3.6.0.min.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+<script>
+    function OnSuccess(data) {
+        $("#target").empty();
+        data.forEach((c) => {
+            $("#target").append(`<tr><td>${c.Id}</td><td>${c.Name}</td><td>${c.Description == null ? "" : c.Description }</td><td>${c.Price}</td></tr>`)
+        });
+    }
+</script>

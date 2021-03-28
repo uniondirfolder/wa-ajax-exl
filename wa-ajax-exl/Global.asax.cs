@@ -13,6 +13,7 @@ namespace wa_ajax_exl
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            
         }
     }
 }
